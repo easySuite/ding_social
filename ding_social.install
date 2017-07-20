@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_install().
+ */
+function ding_social_enable() {
+  // Enabling option in easyDDB IPE Filter module.
+  if (module_exists('easyddb_ipe_filter')) {
+    $opts = variable_get('easyddb_ipe_filter_table', array());
+    $opts['instagram_block-instagram_block']['value'] = 1;
+
+    variable_set('easyddb_ipe_filter_table', $opts);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function ding_social_uninstall() {
+  // Remove rules configuration for fb_autopost.
+  $rule = rules_config_load('rules_post_to_facebook');
+
+  if (!empty($rule)) {
+    rules_config_delete(array($rule->id));
+  }
+}

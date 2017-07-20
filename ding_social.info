@@ -1,0 +1,14 @@
+name = Ding Social
+core = 7.x
+package = Ding!
+dependencies[] = easyddb_ipe_filter
+dependencies[] = entity
+dependencies[] = fb_autopost
+dependencies[] = fb_autopost_entity
+dependencies[] = fb_autopost_types
+dependencies[] = fb_permissions
+dependencies[] = instagram_block
+dependencies[] = metatag_facebook
+dependencies[] = rules
+features[features_api][] = api:2
+features[rules_config][] = rules_post_to_facebook
