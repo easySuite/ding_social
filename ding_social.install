@@ -22,7 +22,7 @@ function ding_social_enable() {
  */
 function ding_social_uninstall() {
   // Remove rules configuration for fb_autopost.
-  $rule = rules_config_load('rules_post_to_facebook');
+  $rule = rules_config_load('rules_post_news_to_facebook');
 
   if (!empty($rule)) {
     rules_config_delete(array($rule->id));
