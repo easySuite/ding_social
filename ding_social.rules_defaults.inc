@@ -15,7 +15,7 @@ function ding_social_default_rules_configuration() {
       "OWNER" : "rules",
       "REQUIRES" : [ "rules", "fb_autopost_entity" ],
       "ON" : {
-        "node_insert--ding_news" : { "bundle" : "ding_news" },
+        "node_insert--ding_news" : { "bundle" : "ding_news" }
       },
       "DO" : [
         { "entity_create" : {
@@ -40,6 +40,11 @@ function ding_social_default_rules_configuration() {
         { "data_set" : {
             "data" : [ "entity-created:field-facebook-link" ],
             "value" : [ "node:url" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "entity-created:field-facebook-name" ],
+            "value" : [ "node:title" ]
           }
         },
         { "publish_to_facebook" : {
