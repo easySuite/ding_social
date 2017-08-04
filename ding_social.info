@@ -14,4 +14,5 @@ dependencies[] = rules_admin
 features[features_api][] = api:2
 features[metatag][] = node:ding_news
 features[rules_config][] = rules_post_news_to_facebook
+stylesheets[all][] = css/ding_social.css
 mtime = 1500625462
