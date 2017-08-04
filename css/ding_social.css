@@ -1,0 +1,46 @@
+.ding-social-insta-block {
+  /* Do not edit/remove this. Needed for correct displaying on page load. */
+  display: none;
+  /* Everything which is below this comment can be edited. */
+}
+.ding-social-insta-block .slick-initialized {
+  display: block;
+}
+.ding-social-insta-block .ding-social-insta-item {
+  border: 1px solid #f1f1f1;
+  width: calc((100% / 3) - 5px);
+  display: inline-block;
+  vertical-align: top;
+}
+.ding-social-insta-block .ding-social-insta-item .ding-social-insta-item-user .profile {
+  display: inline-block;
+  padding: 7px;
+  width: 100%;
+}
+.ding-social-insta-block .ding-social-insta-item .ding-social-insta-item-user .profile .profile-photo {
+  width: 25px;
+  height: 25px;
+  float: left;
+}
+.ding-social-insta-block .ding-social-insta-item .ding-social-insta-item-user .profile .profile-name a {
+  font-weight: bold;
+}
+.ding-social-insta-block .ding-social-insta-item .ding-social-insta-item-caption {
+  margin-top: 10px;
+  padding: 0 7px 7px 7px;
+}
+
+.ding-social-insta-slick-controls {
+  width: 100%;
+}
+.ding-social-insta-slick-controls ul {
+  margin: 0 auto;
+  text-align: center;
+}
+.ding-social-insta-slick-controls ul li {
+  display: inline;
+}
+.ding-social-insta-slick-controls .slick-arrow {
+  cursor: pointer;
+  border: 1px solid black;
+}
