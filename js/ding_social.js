@@ -8,7 +8,20 @@
       slidesToScroll: 3,
       prevArrow: $('.insta-prev'),
       nextArrow: $('.insta-next'),
-      lazyLoad: 'ondemand'
+      lazyLoad: 'ondemand',
+      responsive: [{
+        breakpoint: 568,
+        settings: {
+           slidesToShow: 1,
+           slidesToScroll: 1,
+        }
+      }, {
+        breakpoint: 320,
+        settings: {
+           slidesToShow: 1,
+           slidesToScroll: 1
+        }
+      }]
     });
   });
 })(jQuery);
