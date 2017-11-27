@@ -8,7 +8,7 @@
  * Implements hook_install().
  */
 function ding_social_enable() {
-  // Enabling option in easyDDB IPE Filter module.
+  // Enabling option in easyOPAC IPE Filter module.
   if (module_exists('easyddb_ipe_filter')) {
     $opts = variable_get('easyddb_ipe_filter_table', array());
     $opts['instagram_block-instagram_block']['value'] = 1;
