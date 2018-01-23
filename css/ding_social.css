@@ -1,0 +1,193 @@
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  50% {
+    -webkit-transform: rotate(-180deg);
+  }
+  100% {
+    -webkit-transform: rotate(-360deg);
+  }
+}
+@-moz-keyframes spin {
+  0% {
+    -moz-transform: rotate(0deg);
+  }
+  50% {
+    -moz-transform: rotate(-180deg);
+  }
+  100% {
+    -moz-transform: rotate(-360deg);
+  }
+}
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  50% {
+    -webkit-transform: rotate(-180deg);
+    -moz-transform: rotate(-180deg);
+    -ms-transform: rotate(-180deg);
+    -o-transform: rotate(-180deg);
+    transform: rotate(-180deg);
+  }
+  100% {
+    -webkit-transform: rotate(-360deg);
+    -moz-transform: rotate(-360deg);
+    -ms-transform: rotate(-360deg);
+    -o-transform: rotate(-360deg);
+    transform: rotate(-360deg);
+  }
+}
+@-webkit-keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-moz-keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.ding-social-insta-block {
+  /* Do not edit/remove this. Needed for correct displaying on page load. */
+  display: none;
+  /* Everything which is below this comment can be edited. */
+}
+.ding-social-insta-block .slick-initialized {
+  display: block;
+}
+.ding-social-insta-block .ding-social-insta-item {
+  border: 1px solid #f1f1f1;
+  width: calc((100% / 3) - 5px);
+  display: inline-block;
+  vertical-align: top;
+}
+.ding-social-insta-block .ding-social-insta-item .ding-social-insta-item-user .profile {
+  display: inline-block;
+  padding: 7px;
+  width: 100%;
+}
+.ding-social-insta-block .ding-social-insta-item .ding-social-insta-item-user .profile .profile-photo {
+  width: 25px;
+  height: 25px;
+  float: left;
+}
+.ding-social-insta-block .ding-social-insta-item .ding-social-insta-item-user .profile .profile-name a {
+  font-weight: bold;
+}
+.ding-social-insta-block .ding-social-insta-item .ding-social-insta-item-caption {
+  margin-top: 10px;
+  padding: 0 7px 7px 7px;
+}
+.ding-social-insta-block .slick-track {
+  height: 470px;
+}
+@media screen and (max-width: 1100px) {
+  .ding-social-insta-block .slick-track {
+    height: 420px;
+  }
+}
+@media screen and (max-width: 950px) {
+  .ding-social-insta-block .slick-track {
+    height: 370px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .ding-social-insta-block .slick-track {
+    height: auto;
+  }
+}
+.ding-social-insta-block .slick-list.draggable {
+  padding-bottom: 40px;
+}
+
+.ding-social-insta-slick-controls {
+  width: 100%;
+}
+.ding-social-insta-slick-controls ul {
+  margin: 0 auto;
+  text-align: center;
+}
+.ding-social-insta-slick-controls ul li {
+  display: inline;
+}
+.ding-social-insta-slick-controls .slick-arrow {
+  cursor: pointer;
+  border: 1px solid black;
+}
+
+/* Instagram styles
+   ========================================================================== */
+.pane-instagram-block-instagram-block .ding-social-insta-item {
+  min-height: 377px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.pane-instagram-block-instagram-block .ding-social-insta-item .ding-social-insta-item-image img {
+  width: 100%;
+}
+.pane-instagram-block-instagram-block .ding-social-insta-item .ding-social-insta-item-caption {
+  color: #474747;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.pane-instagram-block-instagram-block .ding-social-insta-item .profile {
+  padding-left: 7px;
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+.pane-instagram-block-instagram-block .ding-social-insta-item .profile span.ext {
+  display: none;
+}
+.pane-instagram-block-instagram-block .ding-social-insta-item .profile .profile-photo {
+  display: none;
+}
+.pane-instagram-block-instagram-block .ding-social-insta-slick-controls .insta-prev.slick-prev {
+  left: 10px;
+}
+.pane-instagram-block-instagram-block .ding-social-insta-slick-controls .insta-next.slick-next {
+  right: 10px;
+}
+
+.field-slideshow-caption span {
+  color: #262627;
+}
+
+@media screen and (max-width: 1100px) {
+  .pane-instagram-block-instagram-block .ding-social-insta-item-caption {
+    display: block;
+  }
+  .pane-instagram-block-instagram-block .ding-social-insta-item-image img {
+    width: 100%;
+  }
+}

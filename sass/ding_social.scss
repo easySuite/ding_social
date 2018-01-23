@@ -1,0 +1,147 @@
+@import "../../../themes/ddbasic/sass/_base.scss";
+@import "susy";
+
+.ding-social-insta-block {
+  /* Do not edit/remove this. Needed for correct displaying on page load. */
+  display: none;
+
+  .slick-initialized {
+    display: block;
+  }
+  /* Everything which is below this comment can be edited. */
+
+  .ding-social-insta-item {
+    border: 1px solid #f1f1f1;
+    width: calc((100% / 3) - 5px);
+    display: inline-block;
+    vertical-align: top;
+
+    .ding-social-insta-item-user {
+      .profile {
+        display: inline-block;
+        padding: 7px;
+        width: 100%;
+
+        .profile-photo {
+          width: 25px;
+          height: 25px;
+          float: left;
+        }
+
+        .profile-name a {
+          font-weight: bold;
+        }
+      }
+    }
+
+    .ding-social-insta-item-caption {
+      margin-top: 10px;
+      padding: 0 7px 7px 7px;
+    }
+  }
+
+  .slick-track {
+    height: 470px;
+
+    @include media($notebook) {
+      height: 420px;
+    }
+
+    @include media($tablet) {
+      height: 370px;
+    }
+
+    @include media($mobile) {
+      height: auto;
+    }
+  }
+
+  .slick-list.draggable {
+    padding-bottom: 40px;
+  }
+}
+
+.ding-social-insta-slick-controls {
+  width: 100%;
+  ul {
+    margin: 0 auto;
+    text-align: center;
+
+    li {
+      display: inline;
+    }
+  }
+
+  .slick-arrow {
+    cursor: pointer;
+    border: 1px solid black;
+  }
+}
+
+/* Instagram styles
+   ========================================================================== */
+
+.pane-instagram-block-instagram-block {
+  .ding-social-insta-item {
+    min-height: 377px;
+    margin-right: 10px;
+    margin-left: 10px;
+
+    .ding-social-insta-item-image {
+      img {
+        width: 100%;
+      }
+    }
+
+    .ding-social-insta-item-caption {
+      color: $color-standard-text;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    .profile {
+      padding-left: 7px;
+      width: 100%;
+      margin-top: 15px;
+      margin-bottom: 0;
+
+      span.ext {
+        display: none;
+      }
+
+      .profile-photo {
+        display: none;
+      }
+    }
+  }
+ .ding-social-insta-slick-controls {
+  .insta-prev.slick-prev {
+    left: 10px;
+  }
+  .insta-next.slick-next {
+    right: 10px;
+  }
+ }
+}
+
+.field-slideshow-caption span {
+  color: $color-text;
+}
+
+@include media($notebook) {
+  .pane-instagram-block-instagram-block {
+    .ding-social-insta-item-caption {
+      display: block;
+    }
+
+   .ding-social-insta-item-image {
+      img {
+        width: 100%;
+      }
+    }
+  }
+}
