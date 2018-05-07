@@ -5,6 +5,15 @@
  */
 
 /**
+ * Implements hook_ctools_plugin_directory().
+ */
+function ding_social_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/content_types';
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function ding_social_theme($existing, $type, $theme, $path) {
