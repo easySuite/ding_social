@@ -41,6 +41,12 @@ function ding_social_theme($existing, $type, $theme, $path) {
  */
 function ding_social_preprocess_instagram_block(&$variables) {
   $variables['theme_hook_suggestions'] = array('ding_social__instagram_block');
+
+  $block_config = variable_get('instagram_block_user_block_settings', array());
+  if (!empty($block_config['title'])) {
+    $variables['block_title'] = $block_config['title'];
+  }
+
   $variables['content']['#attached'] = array(
     'js' => array(
       libraries_get_path('slick') . '/slick/slick.min.js',
