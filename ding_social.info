@@ -1,6 +1,6 @@
 name = Ding Social
 core = 7.x
-version = 7.x-4.4.2
+version = 7.x-4.5.0
 package = Ding!
 dependencies[] = ding_ipe_filter
 dependencies[] = entity
