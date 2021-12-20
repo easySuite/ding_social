@@ -10,6 +10,6 @@ projects[fb_autopost][subdir] = "contrib"
 projects[fb_autopost][version] = "1.4"
 
 libraries[facebook-php-sdk][download][type] = "git"
-libraries[facebook-php-sdk][download][url] =  "git@github.com:easySuite/facebook-php-sdk.git"
-libraries[facebook-php-sdk][download][branch] = "development"
+libraries[facebook-php-sdk][download][url] =  "git@github.com:facebookarchive/php-graph-sdk.git"
+libraries[facebook-php-sdk][download][tag] = "5.7.0"
 libraries[facebook-php-sdk][destination] = "libraries"
