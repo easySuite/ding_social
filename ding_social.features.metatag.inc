@@ -13,6 +13,7 @@ function ding_social_metatag_export_default() {
   // Exported Metatag config instance: node:ding_news.
   $config['node:ding_news'] = array(
     'instance' => 'node:ding_news',
+    'disabled' => FALSE,
     'config' => array(
       'og:determiner' => array(
         'value' => 'auto',

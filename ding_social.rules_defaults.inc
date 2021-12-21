@@ -29,7 +29,7 @@ function ding_social_default_rules_configuration() {
         },
         { "data_set" : {
             "data" : [ "entity-created:field-facebook-message" ],
-            "value" : [ "node:field-ding-news-body:value" ]
+            "value" : [ "node:field-ding-news-lead" ]
           }
         },
         { "data_set" : {
@@ -39,11 +39,11 @@ function ding_social_default_rules_configuration() {
         },
         { "data_set" : {
             "data" : [ "entity-created:field-facebook-picture" ],
-            "value" : [ "node:field-ding-news-title-image:file:url" ]
+            "value" : [ "node:field-ding-news-title-image:0:file:url" ]
           }
         },
         { "publish_to_facebook" : {
-            "USING" : { "publication" : [ "entity-created" ], "pages" : "270384803442389" },
+            "USING" : { "publication" : [ "entity-created" ], "pages" : "" },
             "PROVIDE" : { "facebook_publication_id" : { "facebook_publication_id" : "Facebook publication returned ID" } }
           }
         },
