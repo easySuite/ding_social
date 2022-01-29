@@ -22,4 +22,7 @@ https://www.drupal.org/node/2746185
 4. Go to @/admin/config/workflow/rules and enable "Post News to Facebook" rule.
 5. Edit "Post News to Facebook" rule and in "Publish to Facebook page" action, edit the value of "FACEBOOK PAGES" section - it have to match with application authorized in step 3.
 
-After step 5 you will have the possibility to post new nodes of type News automaticaly,ectly on facebook page. 
+After step 5 you will have the possibility to post new nodes of type News automaticaly,ectly on facebook page.
+
+## Licence
+This module is licensed uder GPLv3.
