@@ -2,6 +2,14 @@
 /**
  * @file
  * ding_social.rules_defaults.inc
+ *
+ * This file is part of ding_social module.
+ *
+ * ding_social module is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * ding_social module is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with ding_social module. If not, see <https://www.gnu.org/licenses/>.
  */
 
 /**
@@ -29,7 +37,7 @@ function ding_social_default_rules_configuration() {
         },
         { "data_set" : {
             "data" : [ "entity-created:field-facebook-message" ],
-            "value" : [ "node:field-ding-news-body:value" ]
+            "value" : [ "node:field-ding-news-lead" ]
           }
         },
         { "data_set" : {
@@ -39,11 +47,11 @@ function ding_social_default_rules_configuration() {
         },
         { "data_set" : {
             "data" : [ "entity-created:field-facebook-picture" ],
-            "value" : [ "node:field-ding-news-title-image:file:url" ]
+            "value" : [ "node:field-ding-news-title-image:0:file:url" ]
           }
         },
         { "publish_to_facebook" : {
-            "USING" : { "publication" : [ "entity-created" ], "pages" : "270384803442389" },
+            "USING" : { "publication" : [ "entity-created" ], "pages" : "" },
             "PROVIDE" : { "facebook_publication_id" : { "facebook_publication_id" : "Facebook publication returned ID" } }
           }
         },
