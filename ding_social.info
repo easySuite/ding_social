@@ -15,4 +15,6 @@ dependencies[] = rules_admin
 stylesheets[all][] = css/ding_social.css
 features[features_api][] = api:2
 features[metatag][] = node:ding_news
+features[metatag][] = node:ding_event
 features[rules_config][] = rules_post_news_to_facebook
+features[rules_config][] = rules_post_events_to_facebook
