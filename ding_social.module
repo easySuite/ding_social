@@ -80,8 +80,10 @@ function ding_social_preprocess_instagram_block_image(&$variables) {
  * Implements hook_html_head_alter().
  */
 function ding_social_html_head_alter(&$head_elements) {
-  $metatag_description = $head_elements['metatag_description_0']['#value'];
-  $head_elements['metatag_og:description_0']['#value'] = $metatag_description;
+  if (isset($head_elements['metatag_description_0'])) {
+    $metatag_description = $head_elements['metatag_description_0']['#value'];
+    $head_elements['metatag_og:description_0']['#value'] = $metatag_description;
+  }
 }
 
 /**
