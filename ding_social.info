@@ -10,6 +10,7 @@ dependencies[] = fb_autopost_types
 dependencies[] = fb_permissions
 dependencies[] = instagram_block
 dependencies[] = metatag
+dependencies[] = metatag_opengraph
 dependencies[] = rules
 dependencies[] = rules_admin
 stylesheets[all][] = css/ding_social.css
