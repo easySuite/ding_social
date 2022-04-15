@@ -29,7 +29,7 @@ function ding_social_default_rules_configuration() {
         { "entity_create" : {
             "USING" : {
               "type" : "facebook_publication",
-              "param_type" : "post",
+              "param_type" : "link",
               "param_user" : [ "node:author" ]
             },
             "PROVIDE" : { "entity_created" : { "entity_created" : "Created entity" } }
@@ -45,9 +45,47 @@ function ding_social_default_rules_configuration() {
             "value" : [ "node:url" ]
           }
         },
+        { "publish_to_facebook" : {
+            "USING" : { "publication" : [ "entity-created" ], "pages" : "" },
+            "PROVIDE" : { "facebook_publication_id" : { "facebook_publication_id" : "Facebook publication returned ID" } }
+          }
+        },
         { "data_set" : {
-            "data" : [ "entity-created:field-facebook-picture" ],
-            "value" : [ "node:field-ding-news-title-image:0:file:url" ]
+            "data" : [ "entity-created:facebook-id" ],
+            "value" : [ "facebook-publication-id" ]
+          }
+        },
+        { "entity_save" : { "data" : [ "entity-created" ], "immediate" : 1 } }
+      ]
+    }
+  }');
+
+  $items['rules_post_events_to_facebook'] = entity_import('rules_config', '{ "rules_post_events_to_facebook" : {
+      "LABEL" : "Post Events to Facebook",
+      "PLUGIN" : "reaction rule",
+      "ACTIVE" : false,
+      "OWNER" : "rules",
+      "TAGS" : [ "Ding Social" ],
+      "REQUIRES" : [ "rules", "fb_autopost_entity" ],
+      "ON" : { "node_insert--ding_event" : { "bundle" : "ding_event" } },
+      "DO" : [
+        { "entity_create" : {
+            "USING" : {
+              "type" : "facebook_publication",
+              "param_type" : "link",
+              "param_user" : [ "node:author" ]
+            },
+            "PROVIDE" : { "entity_created" : { "entity_created" : "Created entity" } }
+          }
+        },
+        { "data_set" : {
+            "data" : [ "entity-created:field-facebook-message" ],
+            "value" : [ "node:field-ding-event-lead" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "entity-created:field-facebook-link" ],
+            "value" : [ "node:url" ]
           }
         },
         { "publish_to_facebook" : {
