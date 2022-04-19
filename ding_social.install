@@ -35,3 +35,15 @@ function ding_social_uninstall() {
     rules_config_delete(array($rule->id));
   }
 }
+
+/**
+ * Change the weight of module in system.
+ */
+function ding_social_update_7001(&$sandbox) {
+  db_update('system')
+    ->fields([
+      'weight' => 9999,
+    ])
+    ->condition('name', 'ding_social', '=')
+    ->execute();
+}

@@ -17,14 +17,34 @@
  */
 function ding_social_default_rules_configuration() {
   $items = array();
-  $items['rules_post_news_to_facebook'] = entity_import('rules_config', '{ "rules_post_news_to_facebook" : {
-      "LABEL" : "Post News to Facebook",
+  $items['rules_fb_check_node_is_flagged'] = entity_import('rules_config', '{ "rules_fb_check_node_is_flagged" : {
+      "LABEL" : "FB: Check node is flagged",
+      "PLUGIN" : "and",
+      "OWNER" : "rules",
+      "TAGS" : [ "Ding Social" ],
+      "REQUIRES" : [ "flag" ],
+      "USES VARIABLES" : { "node" : { "label" : "Node", "type" : "node" } },
+      "AND" : [
+        { "flag_flagged_node" : {
+            "flag" : "facebook",
+            "node" : [ "node" ],
+            "flagging_user" : [ "node:author" ]
+          }
+        }
+      ]
+    }
+  }');
+  $items['rules_post_events_to_facebook'] = entity_import('rules_config', '{ "rules_post_events_to_facebook" : {
+      "LABEL" : "Post Events to Facebook",
       "PLUGIN" : "reaction rule",
       "ACTIVE" : false,
       "OWNER" : "rules",
       "TAGS" : [ "Ding Social" ],
       "REQUIRES" : [ "rules", "fb_autopost_entity" ],
-      "ON" : { "node_insert--ding_news" : { "bundle" : "ding_news" } },
+      "ON" : { "node_insert--ding_event" : { "bundle" : "ding_event" } },
+      "IF" : [
+        { "component_rules_fb_check_node_is_flagged" : { "node" : [ "node" ] } }
+      ],
       "DO" : [
         { "entity_create" : {
             "USING" : {
@@ -37,7 +57,7 @@ function ding_social_default_rules_configuration() {
         },
         { "data_set" : {
             "data" : [ "entity-created:field-facebook-message" ],
-            "value" : [ "node:field-ding-news-lead" ]
+            "value" : [ "node:field-ding-event-lead" ]
           }
         },
         { "data_set" : {
@@ -59,15 +79,17 @@ function ding_social_default_rules_configuration() {
       ]
     }
   }');
-
-  $items['rules_post_events_to_facebook'] = entity_import('rules_config', '{ "rules_post_events_to_facebook" : {
-      "LABEL" : "Post Events to Facebook",
+  $items['rules_post_news_to_facebook'] = entity_import('rules_config', '{ "rules_post_news_to_facebook" : {
+      "LABEL" : "Post News to Facebook",
       "PLUGIN" : "reaction rule",
       "ACTIVE" : false,
       "OWNER" : "rules",
       "TAGS" : [ "Ding Social" ],
       "REQUIRES" : [ "rules", "fb_autopost_entity" ],
-      "ON" : { "node_insert--ding_event" : { "bundle" : "ding_event" } },
+      "ON" : { "node_insert--ding_news" : { "bundle" : "ding_news" } },
+      "IF" : [
+        { "component_rules_fb_check_node_is_flagged" : { "node" : [ "node" ] } }
+      ],
       "DO" : [
         { "entity_create" : {
             "USING" : {
@@ -80,7 +102,7 @@ function ding_social_default_rules_configuration() {
         },
         { "data_set" : {
             "data" : [ "entity-created:field-facebook-message" ],
-            "value" : [ "node:field-ding-event-lead" ]
+            "value" : [ "node:field-ding-news-lead" ]
           }
         },
         { "data_set" : {

@@ -4,12 +4,21 @@
  *
  * This file is part of ding_social module.
  *
- * ding_social module is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * ding_social module is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by the
+ *   Free Software Foundation, either version 3 of the License, or (at your
+ *   option) any later version.
  *
- * ding_social module is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * ding_social module is distributed in the hope that it will be useful, but
+ *   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *   or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ *   for more details.
  *
- * You should have received a copy of the GNU General Public License along with ding_social module. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ *   ding_social module. If not, see <https://www.gnu.org/licenses/>.
  */
+
+include_once 'ding_social.features.inc';
 
 /**
  * Implements hook_ctools_plugin_directory().
@@ -24,21 +33,21 @@ function ding_social_ctools_plugin_directory($owner, $plugin_type) {
  * Implements hook_theme().
  */
 function ding_social_theme($existing, $type, $theme, $path) {
-  $theme = array();
+  $theme = [];
 
-  $theme['ding_social__instagram_block'] = array(
+  $theme['ding_social__instagram_block'] = [
     'render element' => 'content',
     'base hook' => 'node',
     'template' => 'ding-social--instagram-block',
     'path' => drupal_get_path('module', 'ding_social') . '/templates',
-  );
+  ];
 
-  $theme['ding_social__instagram_block_item'] = array(
+  $theme['ding_social__instagram_block_item'] = [
     'render element' => 'content',
     'base hook' => 'node',
     'template' => 'ding-social--instagram-block-item',
     'path' => drupal_get_path('module', 'ding_social') . '/templates',
-  );
+  ];
 
   return $theme;
 }
@@ -47,30 +56,30 @@ function ding_social_theme($existing, $type, $theme, $path) {
  * Implements hook_preprocess_HOOK().
  */
 function ding_social_preprocess_instagram_block(&$variables) {
-  $variables['theme_hook_suggestions'] = array('ding_social__instagram_block');
+  $variables['theme_hook_suggestions'] = ['ding_social__instagram_block'];
 
-  $block_config = variable_get('instagram_block_user_block_settings', array());
+  $block_config = variable_get('instagram_block_user_block_settings', []);
   if (!empty($block_config['title'])) {
     $variables['block_title'] = $block_config['title'];
   }
 
-  $variables['content']['#attached'] = array(
-    'js' => array(
+  $variables['content']['#attached'] = [
+    'js' => [
       libraries_get_path('slick') . '/slick/slick.min.js',
       drupal_get_path('module', 'ding_social') . '/js/ding_social.js',
-    ),
-    'css' => array(
+    ],
+    'css' => [
       libraries_get_path('slick') . '/slick/slick.css',
       libraries_get_path('slick') . '/slick/slick-theme.css',
-    ),
-  );
+    ],
+  ];
 }
 
 /**
  * Implements hook_preprocess_HOOK().
  */
 function ding_social_preprocess_instagram_block_image(&$variables) {
-  $variables['theme_hook_suggestions'] = array('ding_social__instagram_block_item');
+  $variables['theme_hook_suggestions'] = ['ding_social__instagram_block_item'];
   if ($variables['caption'] == 'Instagram image, no caption provided by author.') {
     $variables['caption'] = '';
   }
@@ -150,5 +159,62 @@ function ding_social_metatag_metatags_view_alter(&$output, $instance, $options) 
       $metatag['lead_out'] = $lead[0]['value'];
     }
     $output['description']['#attached']['drupal_add_html_head'][0][0]['#value'] = implode(" • ", array_filter($metatag));
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ding_social_form_alter(&$form, &$form_state, $form_id) {
+  if (!empty($form['#node_edit_form'])) {
+    $form['#attached']['js'][] = drupal_get_path('module', 'ding_social') . '/js/ding_social.admin.js';
+
+    // Scheduled publish for Facebook post.
+    $descriptions['blank'] = t('Leave the date blank for no scheduled publishing.');
+
+    $form['scheduler_settings']['ding_social'] = [
+      '#type'=>'container',
+      '#id' => 'ding-social-scheduler',
+      '#states' => [
+        'visible' => [
+          ':input[name^="flag[facebook]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+    $form['scheduler_settings']['ding_social']['fb_publish_on'] = array(
+      '#type' => 'date_popup',
+      '#date_format' => 'Y-m-d H:i:s',
+      '#date_year_range' => '0:+10',
+      '#title' => t('Social Media: Publish on Facebook'),
+      '#default_value' => '', // @TODO: Get value from FB entity.
+      '#description' => filter_xss(implode(' ', $descriptions)),
+    );
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function ding_social_entity_insert($entity, $type) {
+  if ($entity instanceof FacebookPublicationEntity) {
+    if ($type === 'facebook_publication') {
+      // Get the scheduled data from POST.
+      $publish_on = $_POST['fb_publish_on'];
+      $flagged = $_POST['flag']['facebook'];
+
+      if ($flagged == "1" && $publish_on) {
+        // Setting "published" value to "0" as FB won't schedule a published post.
+        $entity->field_facebook_published[LANGUAGE_NONE][0]["value"] = 0;
+
+        [$y, $m, $d] = explode('-', $publish_on['date']);
+        [$h, $i] = explode(':', $publish_on['time']);
+
+        $dada = new DateTime();
+        $dada->setDate($y, $m, $d);
+        $dada->setTime($h, $i);
+        $val = $dada->format('Y-m-d H:i');
+        $entity->field_facebook_scheduled_publish[LANGUAGE_NONE][0]['value'] = $val;
+      }
+    }
   }
 }
