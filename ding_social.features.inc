@@ -5,6 +5,21 @@
  */
 
 /**
+ * Implements hook_default_facebook_publication_type().
+ */
+function ding_social_default_facebook_publication_type() {
+  $items = array();
+  $items['ding_social_link'] = entity_import('facebook_publication_type', '{
+    "type" : "ding_social_link",
+    "label" : "Ding Social: Link",
+    "weight" : "0",
+    "description" : "",
+    "data" : null
+  }');
+  return $items;
+}
+
+/**
  * Implements hook_flag_default_flags().
  */
 function ding_social_flag_default_flags() {

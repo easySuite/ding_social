@@ -40,7 +40,7 @@ function ding_social_default_rules_configuration() {
       "ACTIVE" : false,
       "OWNER" : "rules",
       "TAGS" : [ "Ding Social" ],
-      "REQUIRES" : [ "rules", "fb_autopost_entity" ],
+      "REQUIRES" : [ "rules", "ding_social" ],
       "ON" : { "node_insert--ding_event" : { "bundle" : "ding_event" } },
       "IF" : [
         { "component_rules_fb_check_node_is_flagged" : { "node" : [ "node" ] } }
@@ -49,7 +49,7 @@ function ding_social_default_rules_configuration() {
         { "entity_create" : {
             "USING" : {
               "type" : "facebook_publication",
-              "param_type" : "link",
+              "param_type" : "ding_social_link",
               "param_user" : [ "node:author" ]
             },
             "PROVIDE" : { "entity_created" : { "entity_created" : "Created entity" } }
@@ -65,7 +65,12 @@ function ding_social_default_rules_configuration() {
             "value" : [ "node:url" ]
           }
         },
-        { "publish_to_facebook" : {
+        { "data_set" : {
+            "data" : [ "entity-created:field-ding-social-related-id" ],
+            "value" : [ "node:nid" ]
+          }
+        },
+        { "scheduled_publish_to_facebook" : {
             "USING" : { "publication" : [ "entity-created" ], "pages" : "" },
             "PROVIDE" : { "facebook_publication_id" : { "facebook_publication_id" : "Facebook publication returned ID" } }
           }
@@ -85,7 +90,7 @@ function ding_social_default_rules_configuration() {
       "ACTIVE" : false,
       "OWNER" : "rules",
       "TAGS" : [ "Ding Social" ],
-      "REQUIRES" : [ "rules", "fb_autopost_entity" ],
+      "REQUIRES" : [ "rules", "ding_social" ],
       "ON" : { "node_insert--ding_news" : { "bundle" : "ding_news" } },
       "IF" : [
         { "component_rules_fb_check_node_is_flagged" : { "node" : [ "node" ] } }
@@ -94,10 +99,15 @@ function ding_social_default_rules_configuration() {
         { "entity_create" : {
             "USING" : {
               "type" : "facebook_publication",
-              "param_type" : "link",
+              "param_type" : "ding_social_link",
               "param_user" : [ "node:author" ]
             },
             "PROVIDE" : { "entity_created" : { "entity_created" : "Created entity" } }
+          }
+        },
+        { "data_set" : {
+            "data" : [ "entity-created:field-ding-social-related-id" ],
+            "value" : [ "node:nid" ]
           }
         },
         { "data_set" : {
@@ -110,7 +120,7 @@ function ding_social_default_rules_configuration() {
             "value" : [ "node:url" ]
           }
         },
-        { "publish_to_facebook" : {
+        { "scheduled_publish_to_facebook" : {
             "USING" : { "publication" : [ "entity-created" ], "pages" : "" },
             "PROVIDE" : { "facebook_publication_id" : { "facebook_publication_id" : "Facebook publication returned ID" } }
           }

@@ -20,6 +20,8 @@
 
 include_once 'ding_social.features.inc';
 
+module_load_include('inc', 'fb_autopost_entity', 'fb_autopost_entity.rules');
+
 /**
  * Implements hook_ctools_plugin_directory().
  */
@@ -167,13 +169,38 @@ function ding_social_metatag_metatags_view_alter(&$output, $instance, $options) 
  */
 function ding_social_form_alter(&$form, &$form_state, $form_id) {
   if (!empty($form['#node_edit_form'])) {
+    // Don't alter node form on other CT's.
+    if (!in_array($form['#bundle'], ['ding_news', 'ding_event'])) {
+      return;
+    }
+
+    // Get scheduled datetime value to fill this in form.
+    if (isset($form['#node']) && $form['#node']->nid) {
+      $query = db_select('field_data_field_ding_social_related_id', 'r')
+        ->fields('r', ['entity_id'])
+        ->condition('field_ding_social_related_id_value', $form['#node']->nid)
+        ->execute();
+      $res = $query->fetchField();
+
+      if ($res) {
+        $fb_entities = entity_load('facebook_publication', FALSE, ['fbpid' => $res]);
+        foreach ($fb_entities as $fb_entity) {
+          $fb_scheduled = $fb_entity->field_facebook_scheduled_publish[LANGUAGE_NONE][0]['value'];
+          if (!empty($fb_scheduled)) {
+            $fb_scheduled_form = date('Y-m-d H:i:s', $fb_scheduled);
+          }
+        }
+      }
+    }
+
+    // JS alterations related to the DIng Social functionality.
     $form['#attached']['js'][] = drupal_get_path('module', 'ding_social') . '/js/ding_social.admin.js';
 
-    // Scheduled publish for Facebook post.
+    // Build the form structure for "Social media" scheduler field.
     $descriptions['blank'] = t('Leave the date blank for no scheduled publishing.');
 
     $form['scheduler_settings']['ding_social'] = [
-      '#type'=>'container',
+      '#type' => 'container',
       '#id' => 'ding-social-scheduler',
       '#states' => [
         'visible' => [
@@ -181,40 +208,87 @@ function ding_social_form_alter(&$form, &$form_state, $form_id) {
         ],
       ],
     ];
-    $form['scheduler_settings']['ding_social']['fb_publish_on'] = array(
+
+    $form['scheduler_settings']['ding_social']['fb_publish_on'] = [
       '#type' => 'date_popup',
       '#date_format' => 'Y-m-d H:i:s',
       '#date_year_range' => '0:+10',
       '#title' => t('Social Media: Publish on Facebook'),
-      '#default_value' => '', // @TODO: Get value from FB entity.
+      '#default_value' => $fb_scheduled_form ?? '',
       '#description' => filter_xss(implode(' ', $descriptions)),
-    );
+    ];
   }
 }
 
 /**
- * Implements hook_entity_insert().
+ * Implements hook_rules_action_info().
  */
-function ding_social_entity_insert($entity, $type) {
-  if ($entity instanceof FacebookPublicationEntity) {
-    if ($type === 'facebook_publication') {
-      // Get the scheduled data from POST.
-      $publish_on = $_POST['fb_publish_on'];
-      $flagged = $_POST['flag']['facebook'];
+function ding_social_rules_action_info() {
+  $actions['scheduled_publish_to_facebook'] = [
+    'label' => t('Publish scheduled post to FB page'),
+    'group' => t('Ding social'),
+    'parameter' => [
+      'publication' => [
+        'type' => 'facebook_publication',
+        'label' => t('Facebook publication'),
+      ],
+      'pages' => [
+        'type' => 'text',
+        'label' => t('Facebook pages'),
+        'options list' => 'fb_autopost_entity_available_facebook_pages',
+        'access callback' => 'can_administer_facebook_publications',
+      ],
+    ],
+    'base' => 'rules_action_publish_scheduled_to_facebook',
+    'provides' => [
+      'facebook_publication_id' => [
+        'type' => 'text',
+        'label' => t('Facebook publication returned ID'),
+      ],
+    ],
+  ];
 
-      if ($flagged == "1" && $publish_on) {
-        // Setting "published" value to "0" as FB won't schedule a published post.
-        $entity->field_facebook_published[LANGUAGE_NONE][0]["value"] = 0;
+  return $actions;
+}
 
-        [$y, $m, $d] = explode('-', $publish_on['date']);
-        [$h, $i] = explode(':', $publish_on['time']);
+/**
+ * Callback function called when executing the action.
+ */
+function rules_action_publish_scheduled_to_facebook(FacebookPublicationEntity $publication, $pages) {
+  try {
+    // Get node required data from node POST request.
+    $publish_on = $_POST['fb_publish_on'];
+    $flagged = $_POST['flag']['facebook'];
 
-        $dada = new DateTime();
-        $dada->setDate($y, $m, $d);
-        $dada->setTime($h, $i);
-        $val = $dada->format('Y-m-d H:i');
-        $entity->field_facebook_scheduled_publish[LANGUAGE_NONE][0]['value'] = $val;
-      }
+    // Process rule only if matching requirements.
+    if ($flagged == "1" && !empty($publish_on['date']) && !empty($publish_on['time'])) {
+      // Set "Published" field as "0", because FB won't schedule post which is
+      // effectively published by default.
+      $publication->field_facebook_published[LANGUAGE_NONE][0]['value'] = (int) 0;
+
+      // Parse "Scheduled" date.
+      [$y, $m, $d] = explode('-', $publish_on['date']);
+      [$h, $i] = explode(':', $publish_on['time']);
+
+      $date_time = new DateTime();
+      $date_time->setDate($y, $m, $d);
+      $date_time->setTime($h, $i);
+      $timestamp = $date_time->format('U');
+
+      // Set scheduled time to be sent to FB.
+      $publication->field_facebook_scheduled_publish[LANGUAGE_NONE][0]['value'] = (int) $timestamp;
     }
+
+    $fb = facebook_autopost_entity($publication->type);
+    $fb->setType('link');
+    $facebook_response = $fb->setDestination($pages)
+      ->publishEntity($publication)
+      ->getDecodedBody();
+
+    return ['facebook_publication_id' => $facebook_response['id']];
+  }
+  catch (Exception $e) {
+    watchdog_exception('fb_autopost', $e);
+    drupal_set_message($e->getMessage(), 'error');
   }
 }
