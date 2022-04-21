@@ -18,6 +18,23 @@
 function ding_social_metatag_export_default() {
   $config = array();
 
+  // Exported Metatag config instance: node:ding_event.
+  $config['node:ding_event'] = array(
+    'instance' => 'node:ding_event',
+    'disabled' => FALSE,
+    'config' => array(
+      'og:determiner' => array(
+        'value' => 'auto',
+      ),
+      'og:description' => array(
+        'value' => '[node:field_ding_event_lead]',
+      ),
+      'og:image' => array(
+        'value' => '[node:field_ding_event_title_image]',
+      ),
+    ),
+  );
+
   // Exported Metatag config instance: node:ding_news.
   $config['node:ding_news'] = array(
     'instance' => 'node:ding_news',
@@ -31,23 +48,6 @@ function ding_social_metatag_export_default() {
       ),
       'og:image' => array(
         'value' => '[node:field_ding_news_title_image]',
-      ),
-    ),
-  );
-
-  // Exported Metatag config instance: node:ding_news.
-  $config['node:ding_event'] = array(
-    'instance' => 'node:ding_event',
-    'disabled' => FALSE,
-    'config' => array(
-      'og:determiner' => array(
-        'value' => 'auto',
-      ),
-      'og:description' => array(
-        'value' => '[node:field_ding_event_lead]',
-      ),
-      'og:image' => array(
-        'value' => '[node:field_ding_event_title_image]',
       ),
     ),
   );
