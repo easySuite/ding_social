@@ -267,8 +267,8 @@ function rules_action_publish_scheduled_to_facebook(FacebookPublicationEntity $p
       $publication->field_facebook_published[LANGUAGE_NONE][0]['value'] = (int) 0;
 
       // Parse "Scheduled" date.
-      [$y, $m, $d] = explode('-', $publish_on['date']);
-      [$h, $i] = explode(':', $publish_on['time']);
+      list($y, $m, $d) = explode('-', $publish_on['date']);
+      list($h, $i) = explode(':', $publish_on['time']);
 
       $date_time = new DateTime();
       $date_time->setDate($y, $m, $d);
