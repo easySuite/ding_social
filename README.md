@@ -8,12 +8,13 @@ Go to @/admin/modules page and enable _Ding Social_ module
 
 ## Configuration:
 ### Instagram block
-1. Create client app and retrieve User ID and Access Token data from Instagram.
-2. On @/admin/config/services/instagram_block page put retrieved data keys.
-3. On desired page enter in IPE mode for editing page and add "Instagram Block" in desired region.
-
-For more information on how to authenticate with Instagram read the following documentation:
-https://www.drupal.org/node/2746185
+1. Create new application in Facebook Developers (https://developers.facebook.com/) with "Instagram Basic Display" as
+product.
+2. Get the "App ID" and "App Secret" values from the FB app settings.
+3. On `@/admin/config/services/instagram_block` page, fill the data (App ID and App Secret) gathered from FB app and save
+the settings form.
+4. Click "Login to Instagram" on the same page and authorize the app.
+5. On desired page enter in IPE mode for editing page and add "Instagram Block" in desired region.
 
 ### Facebook Autopost
 1. Register new app in Faceboook Developers Center and get APP Id and APP secret keys.

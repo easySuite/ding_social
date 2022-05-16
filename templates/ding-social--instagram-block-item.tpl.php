@@ -9,7 +9,7 @@
  *
  * ding_social module is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with ding_social module. If not, see <https://www.gnu.org/licenses/>. 
+ * You should have received a copy of the GNU General Public License along with ding_social module. If not, see <https://www.gnu.org/licenses/>.
  */
 ?>
 
@@ -21,21 +21,22 @@
     </div>
     <div class="ding-social-insta-item-user">
         <div class="profile">
-            <div class="profile-photo">
-                <a href="https://instagram.com/<?php print $post->user->username; ?>" target="_blank">
-                    <img src="<?php print $post->user->profile_picture; ?>" alt="">
-                </a>
-            </div>
+          <!-- @TODO: Find a way to render profile picture. -->
+<!--            <div class="profile-photo">-->
+<!--                <a href="https://instagram.com/--><?php //print $post->user; ?><!--" target="_blank">-->
+<!--                    <img src="--><?php //print $post->user; ?><!--" alt="">-->
+<!--                </a>-->
+<!--            </div>-->
             <div class="profile-name">
-                <a href="https://instagram.com/<?php print $post->user->username; ?>" target="_blank">
-                  <?php print $post->user->full_name; ?>
+                <a href="https://instagram.com/<?php print $post->user; ?>" target="_blank">
+                  <?php print $post->user; ?>
                 </a>
             </div>
         </div>
     </div>
-  <?php if (!empty($caption)) : ?>
+  <?php if (!empty($post->caption)) : ?>
       <div class="ding-social-insta-item-caption">
-        <?php print $caption; ?>
+        <?php print $post->caption; ?>
       </div>
   <?php endif; ?>
 </div>
