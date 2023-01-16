@@ -4,20 +4,35 @@
  *
  * This file is part of ding_social module.
  *
- * ding_social module is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * ding_social module is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by the
+ *   Free Software Foundation, either version 3 of the License, or (at your
+ *   option) any later version.
  *
- * ding_social module is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * ding_social module is distributed in the hope that it will be useful, but
+ *   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *   or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ *   for more details.
  *
- * You should have received a copy of the GNU General Public License along with ding_social module. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ *   ding_social module. If not, see <https://www.gnu.org/licenses/>.
  */
 
 /**
- * Implements hook_install().
+ * Implements hook_enable().
  */
 function ding_social_enable() {
+  // Change the weight of module in system.
+  db_update('system')
+    ->fields([
+      'weight' => 9999,
+    ])
+    ->condition('name', 'ding_social', '=')
+    ->execute();
+
   // Enabling option in easyOPAC IPE Filter module.
   if (module_exists('ding_ipe_filter')) {
-    $opts = variable_get('ding_ipe_filter_panes_selected', array());
+    $opts = variable_get('ding_ipe_filter_panes_selected', []);
     $opts['miscellaneous:instagram_block-instagram_block'] = 'miscellaneous:instagram_block-instagram_block';
 
     variable_set('ding_ipe_filter_panes_selected', $opts);
@@ -32,6 +47,18 @@ function ding_social_uninstall() {
   $rule = rules_config_load('rules_post_news_to_facebook');
 
   if (!empty($rule)) {
-    rules_config_delete(array($rule->id));
+    rules_config_delete([$rule->id]);
   }
+}
+
+/**
+ * Change the weight of module in system.
+ */
+function ding_social_update_7001(&$sandbox) {
+  db_update('system')
+    ->fields([
+      'weight' => 9999,
+    ])
+    ->condition('name', 'ding_social', '=')
+    ->execute();
 }
