@@ -17,22 +17,97 @@
  */
 function ding_social_default_rules_configuration() {
   $items = array();
+  $items['rules_fb_check_node_is_flagged'] = entity_import('rules_config', '{ "rules_fb_check_node_is_flagged" : {
+      "LABEL" : "FB: Check node is flagged",
+      "PLUGIN" : "and",
+      "OWNER" : "rules",
+      "TAGS" : [ "Ding Social" ],
+      "REQUIRES" : [ "flag" ],
+      "USES VARIABLES" : { "node" : { "label" : "Node", "type" : "node" } },
+      "AND" : [
+        { "flag_flagged_node" : {
+            "flag" : "facebook",
+            "node" : [ "node" ],
+            "flagging_user" : [ "node:author" ]
+          }
+        }
+      ]
+    }
+  }');
+  $items['rules_post_events_to_facebook'] = entity_import('rules_config', '{ "rules_post_events_to_facebook" : {
+      "LABEL" : "Post Events to Facebook",
+      "PLUGIN" : "reaction rule",
+      "ACTIVE" : false,
+      "OWNER" : "rules",
+      "TAGS" : [ "Ding Social" ],
+      "REQUIRES" : [ "rules", "ding_social" ],
+      "ON" : { "node_insert--ding_event" : { "bundle" : "ding_event" } },
+      "IF" : [
+        { "component_rules_fb_check_node_is_flagged" : { "node" : [ "node" ] } }
+      ],
+      "DO" : [
+        { "entity_create" : {
+            "USING" : {
+              "type" : "facebook_publication",
+              "param_type" : "ding_social_link",
+              "param_user" : [ "node:author" ]
+            },
+            "PROVIDE" : { "entity_created" : { "entity_created" : "Created entity" } }
+          }
+        },
+        { "data_set" : {
+            "data" : [ "entity-created:field-facebook-message" ],
+            "value" : [ "node:field-ding-event-lead" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "entity-created:field-facebook-link" ],
+            "value" : [ "node:url" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "entity-created:field-ding-social-related-id" ],
+            "value" : [ "node:nid" ]
+          }
+        },
+        { "scheduled_publish_to_facebook" : {
+            "USING" : { "publication" : [ "entity-created" ], "pages" : "" },
+            "PROVIDE" : { "facebook_publication_id" : { "facebook_publication_id" : "Facebook publication returned ID" } }
+          }
+        },
+        { "data_set" : {
+            "data" : [ "entity-created:facebook-id" ],
+            "value" : [ "facebook-publication-id" ]
+          }
+        },
+        { "entity_save" : { "data" : [ "entity-created" ], "immediate" : 1 } }
+      ]
+    }
+  }');
   $items['rules_post_news_to_facebook'] = entity_import('rules_config', '{ "rules_post_news_to_facebook" : {
       "LABEL" : "Post News to Facebook",
       "PLUGIN" : "reaction rule",
       "ACTIVE" : false,
       "OWNER" : "rules",
       "TAGS" : [ "Ding Social" ],
-      "REQUIRES" : [ "rules", "fb_autopost_entity" ],
+      "REQUIRES" : [ "rules", "ding_social" ],
       "ON" : { "node_insert--ding_news" : { "bundle" : "ding_news" } },
+      "IF" : [
+        { "component_rules_fb_check_node_is_flagged" : { "node" : [ "node" ] } }
+      ],
       "DO" : [
         { "entity_create" : {
             "USING" : {
               "type" : "facebook_publication",
-              "param_type" : "post",
+              "param_type" : "ding_social_link",
               "param_user" : [ "node:author" ]
             },
             "PROVIDE" : { "entity_created" : { "entity_created" : "Created entity" } }
+          }
+        },
+        { "data_set" : {
+            "data" : [ "entity-created:field-ding-social-related-id" ],
+            "value" : [ "node:nid" ]
           }
         },
         { "data_set" : {
@@ -45,12 +120,7 @@ function ding_social_default_rules_configuration() {
             "value" : [ "node:url" ]
           }
         },
-        { "data_set" : {
-            "data" : [ "entity-created:field-facebook-picture" ],
-            "value" : [ "node:field-ding-news-title-image:0:file:url" ]
-          }
-        },
-        { "publish_to_facebook" : {
+        { "scheduled_publish_to_facebook" : {
             "USING" : { "publication" : [ "entity-created" ], "pages" : "" },
             "PROVIDE" : { "facebook_publication_id" : { "facebook_publication_id" : "Facebook publication returned ID" } }
           }

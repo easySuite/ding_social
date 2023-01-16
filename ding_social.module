@@ -4,12 +4,23 @@
  *
  * This file is part of ding_social module.
  *
- * ding_social module is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * ding_social module is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by the
+ *   Free Software Foundation, either version 3 of the License, or (at your
+ *   option) any later version.
  *
- * ding_social module is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * ding_social module is distributed in the hope that it will be useful, but
+ *   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *   or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ *   for more details.
  *
- * You should have received a copy of the GNU General Public License along with ding_social module. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ *   ding_social module. If not, see <https://www.gnu.org/licenses/>.
  */
+
+include_once 'ding_social.features.inc';
+
+module_load_include('inc', 'fb_autopost_entity', 'fb_autopost_entity.rules');
 
 /**
  * Implements hook_ctools_plugin_directory().
@@ -24,21 +35,21 @@ function ding_social_ctools_plugin_directory($owner, $plugin_type) {
  * Implements hook_theme().
  */
 function ding_social_theme($existing, $type, $theme, $path) {
-  $theme = array();
+  $theme = [];
 
-  $theme['ding_social__instagram_block'] = array(
+  $theme['ding_social__instagram_block'] = [
     'render element' => 'content',
     'base hook' => 'node',
     'template' => 'ding-social--instagram-block',
     'path' => drupal_get_path('module', 'ding_social') . '/templates',
-  );
+  ];
 
-  $theme['ding_social__instagram_block_item'] = array(
+  $theme['ding_social__instagram_block_item'] = [
     'render element' => 'content',
     'base hook' => 'node',
     'template' => 'ding-social--instagram-block-item',
     'path' => drupal_get_path('module', 'ding_social') . '/templates',
-  );
+  ];
 
   return $theme;
 }
@@ -47,31 +58,237 @@ function ding_social_theme($existing, $type, $theme, $path) {
  * Implements hook_preprocess_HOOK().
  */
 function ding_social_preprocess_instagram_block(&$variables) {
-  $variables['theme_hook_suggestions'] = array('ding_social__instagram_block');
+  $variables['theme_hook_suggestions'] = ['ding_social__instagram_block'];
 
-  $block_config = variable_get('instagram_block_user_block_settings', array());
+  $block_config = variable_get('instagram_block_user_block_settings', []);
   if (!empty($block_config['title'])) {
     $variables['block_title'] = $block_config['title'];
   }
 
-  $variables['content']['#attached'] = array(
-    'js' => array(
+  $variables['content']['#attached'] = [
+    'js' => [
       libraries_get_path('slick') . '/slick/slick.min.js',
       drupal_get_path('module', 'ding_social') . '/js/ding_social.js',
-    ),
-    'css' => array(
+    ],
+    'css' => [
       libraries_get_path('slick') . '/slick/slick.css',
       libraries_get_path('slick') . '/slick/slick-theme.css',
-    ),
-  );
+    ],
+  ];
 }
 
 /**
  * Implements hook_preprocess_HOOK().
  */
 function ding_social_preprocess_instagram_block_image(&$variables) {
-  $variables['theme_hook_suggestions'] = array('ding_social__instagram_block_item');
+  $variables['theme_hook_suggestions'] = ['ding_social__instagram_block_item'];
   if ($variables['caption'] == 'Instagram image, no caption provided by author.') {
     $variables['caption'] = '';
+  }
+}
+
+/**
+ * Implements hook_html_head_alter().
+ */
+function ding_social_html_head_alter(&$head_elements) {
+  if (isset($head_elements['metatag_description_0'])) {
+    $metatag_description = $head_elements['metatag_description_0']['#value'];
+    $head_elements['metatag_og:description_0']['#value'] = $metatag_description;
+  }
+}
+
+/**
+ * Implements hook_metatag_metatags_view_alter().
+ */
+function ding_social_metatag_metatags_view_alter(&$output, $instance, $options) {
+  if ($instance == 'panels:ding_event_node_view') {
+    $node = menu_get_object();
+    $metatag = [];
+
+    // Metatag elements.
+    $metatag['location_out'] = '';
+    $metatag['date_out'] = '';
+    $metatag['price_out'] = t('Free', [], ['context' => 'Price']);
+    $metatag['lead_out'] = $node->title;
+
+    // Location.
+    $library_gid = field_get_items('node', $node, 'og_group_ref', 'target_id');
+    $location = field_get_items('node', $node, 'field_ding_event_location');
+    if (isset($library_gid) && empty($location[0]['name_line'])) {
+      $library_node = node_load($library_gid[0]['target_id']);
+      $metatag['location_out'] = $library_node->title;
+    }
+
+    if (!empty($location[0]['name_line'])) {
+      $metatag['location_out'] = $location[0]['name_line'];
+    }
+
+    // Date.
+    // Getting the time as a rendered field.
+    // This takes care of the actual "styling" of the date, such as creating
+    // an interval between two times (15:00 - 16:00) if necessary and also
+    // takes care of timezones.
+    $date = field_view_field('node', $node, 'field_ding_event_date', [
+      'label' => 'hidden',
+      'type' => 'date_default',
+      'settings' => [
+        'format_type' => 'ding_date_and_time',
+        'fromto' => 'both',
+      ],
+    ]);
+
+    // Seeing as we're only interested in a string, we'll strip out any HTML.
+    if (!empty($date[0]['#markup'])) {
+      $metatag['date_out'] = strip_tags($date[0]['#markup']);
+    }
+
+    // Price.
+    $price = field_get_items('node', $node, 'field_ding_event_price', 'value');
+
+    if (!empty($price[0]['value'])) {
+      $metatag['price_out'] = t('Price') . ': ' . $price[0]['value'];
+
+      // If its a numeric price, we'll suffix the currency also.
+      // Seeing as its a textfield it could technically be anything.
+      if (is_numeric($price[0]['value'])) {
+        $metatag['price_out'] .= ' ' . variable_get('ding_event_currency_type', 'kr.');
+      }
+    }
+
+    // Lead.
+    $lead = field_get_items('node', $node, 'field_ding_event_lead');
+    if (!empty($lead)) {
+      $metatag['lead_out'] = $lead[0]['value'];
+    }
+    $output['description']['#attached']['drupal_add_html_head'][0][0]['#value'] = implode(" • ", array_filter($metatag));
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ding_social_form_alter(&$form, &$form_state, $form_id) {
+  if (!empty($form['#node_edit_form'])) {
+    // Don't alter node form on other CT's.
+    if (!in_array($form['#bundle'], ['ding_news', 'ding_event'])) {
+      return;
+    }
+
+    // Get scheduled datetime value to fill this in form.
+    if (isset($form['#node']) && $form['#node']->nid) {
+      $query = db_select('field_data_field_ding_social_related_id', 'r')
+        ->fields('r', ['entity_id'])
+        ->condition('field_ding_social_related_id_value', $form['#node']->nid)
+        ->execute();
+      $res = $query->fetchField();
+
+      if ($res) {
+        $fb_entities = entity_load('facebook_publication', FALSE, ['fbpid' => $res]);
+        foreach ($fb_entities as $fb_entity) {
+          $fb_scheduled = $fb_entity->field_facebook_scheduled_publish[LANGUAGE_NONE][0]['value'];
+          if (!empty($fb_scheduled)) {
+            $fb_scheduled_form = date('Y-m-d H:i:s', $fb_scheduled);
+          }
+        }
+      }
+    }
+
+    // JS alterations related to the DIng Social functionality.
+    $form['#attached']['js'][] = drupal_get_path('module', 'ding_social') . '/js/ding_social.admin.js';
+
+    // Build the form structure for "Social media" scheduler field.
+    $descriptions['blank'] = t('Leave the date blank for no scheduled publishing.');
+
+    $form['scheduler_settings']['ding_social'] = [
+      '#type' => 'container',
+      '#id' => 'ding-social-scheduler',
+      '#states' => [
+        'visible' => [
+          ':input[name^="flag[facebook]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['scheduler_settings']['ding_social']['fb_publish_on'] = [
+      '#type' => 'date_popup',
+      '#date_format' => 'Y-m-d H:i:s',
+      '#date_year_range' => '0:+10',
+      '#title' => t('Social Media: Publish on Facebook'),
+      '#default_value' => $fb_scheduled_form ?? '',
+      '#description' => filter_xss(implode(' ', $descriptions)),
+    ];
+  }
+}
+
+/**
+ * Implements hook_rules_action_info().
+ */
+function ding_social_rules_action_info() {
+  $actions['scheduled_publish_to_facebook'] = [
+    'label' => t('Publish scheduled post to FB page'),
+    'group' => t('Ding social'),
+    'parameter' => [
+      'publication' => [
+        'type' => 'facebook_publication',
+        'label' => t('Facebook publication'),
+      ],
+      'pages' => [
+        'type' => 'text',
+        'label' => t('Facebook pages'),
+        'options list' => 'fb_autopost_entity_available_facebook_pages',
+        'access callback' => 'can_administer_facebook_publications',
+      ],
+    ],
+    'base' => 'rules_action_publish_scheduled_to_facebook',
+    'provides' => [
+      'facebook_publication_id' => [
+        'type' => 'text',
+        'label' => t('Facebook publication returned ID'),
+      ],
+    ],
+  ];
+
+  return $actions;
+}
+
+/**
+ * Callback function called when executing the action.
+ */
+function rules_action_publish_scheduled_to_facebook(FacebookPublicationEntity $publication, $pages) {
+  try {
+    // Get node required data from node POST request.
+    $publish_on = $_POST['fb_publish_on'];
+    $flagged = $_POST['flag']['facebook'];
+
+    // Process rule only if matching requirements.
+    if ($flagged == "1" && !empty($publish_on['date']) && !empty($publish_on['time'])) {
+      // Set "Published" field as "0", because FB won't schedule post which is
+      // effectively published by default.
+      $publication->field_facebook_published[LANGUAGE_NONE][0]['value'] = (int) 0;
+
+      // Parse "Scheduled" date.
+      list($y, $m, $d) = explode('-', $publish_on['date']);
+      list($h, $i) = explode(':', $publish_on['time']);
+
+      $date_time = new DateTime();
+      $date_time->setDate($y, $m, $d);
+      $date_time->setTime($h, $i);
+      $timestamp = $date_time->format('U');
+
+      // Set scheduled time to be sent to FB.
+      $publication->field_facebook_scheduled_publish[LANGUAGE_NONE][0]['value'] = (int) $timestamp;
+    }
+
+    $fb = facebook_autopost_entity($publication->type);
+    $fb->setType('link');
+    $facebook_response = $fb->setDestination($pages)
+      ->publishEntity($publication)
+      ->getDecodedBody();
+
+    return ['facebook_publication_id' => $facebook_response['id']];
+  }
+  catch (Exception $e) {
+    watchdog_exception('fb_autopost', $e);
+    drupal_set_message($e->getMessage(), 'error');
   }
 }

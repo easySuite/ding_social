@@ -3,6 +3,7 @@ api = 2
 
 projects[instagram_block][subdir] = "contrib"
 projects[instagram_block][version] = "1.6"
+projects[instagram_block][patch][] = "https://storage.easyting.dk/instagram_block-module_adaptation-EASYOPAC_1385.patch"
 
 projects[fb_autopost][subdir] = "contrib"
 projects[fb_autopost][version] = "1.4"
